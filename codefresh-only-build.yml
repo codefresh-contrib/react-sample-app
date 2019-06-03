@@ -1,0 +1,28 @@
+version: '1.0'
+stages:
+  - prepare
+  - test
+  - build
+steps:
+  main_clone:
+    title: Cloning main repository...
+    stage: prepare
+    type: git-clone
+    repo: 'codefresh-contrib/react-sample-app'
+    revision: master
+    git: github
+  MyUnitTests:
+    title: Unit test
+    stage: test
+    image: node:11.0
+    commands:
+      - yarn install
+      - yarn test
+    environment:
+      - CI=true
+  MyReactBuild:
+    title: Packaging application
+    stage: build
+    image: node:8.16
+    commands:
+      - yarn build
