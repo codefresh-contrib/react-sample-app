@@ -1,0 +1,15 @@
+name: CI with node.js
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs: 
+  ci_to_master:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout
+      - uses: actions/setup-node
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
