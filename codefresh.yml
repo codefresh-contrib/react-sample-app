@@ -1,4 +1,4 @@
-version: '1.0'
+version: "1.0"
 stages:
   - prepare
   - test
@@ -8,9 +8,9 @@ steps:
     title: Cloning main repository...
     stage: prepare
     type: git-clone
-    repo: 'codefresh-contrib/react-sample-app'
+    repo: "codefresh-contrib/react-sample-app"
     revision: master
-    git: github
+    git: dale-git
   MyUnitTests:
     title: Unit test
     stage: test
@@ -26,5 +26,5 @@ steps:
     stage: build
     image_name: react-sample-app
     working_directory: ./
-    tag: 'with-nginx'
+    tag: "with-nginx"
     dockerfile: Dockerfile
