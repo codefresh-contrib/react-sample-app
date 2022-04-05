@@ -10,7 +10,7 @@ steps:
     type: git-clone
     repo: "codefresh-contrib/react-sample-app"
     revision: master
-    git: dale-git
+    git: github-1
   MyUnitTests:
     title: Unit test
     stage: test
