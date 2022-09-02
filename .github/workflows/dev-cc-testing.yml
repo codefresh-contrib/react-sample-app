@@ -5,7 +5,6 @@ env:
   REACT_APP_DD_CLIENT_TOKEN: ${{ secrets.REACT_APP_DD_CLIENT_TOKEN }}
   REACT_APP_DD_ENV: ${{ secrets.REACT_APP_DD_ENV }}
   REACT_APP_DD_CLIENT_APP_ID: ${{ secrets.REACT_APP_DD_CLIENT_APP_ID }}
-  G
   
 on:
   push:
