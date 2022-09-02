@@ -21,21 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          echo ${{ github.repository }}
-
-      - name: Get latest release of NodeJS
-        uses: rez0n/actions-github-release@main
-        id: node_release
-        env:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          type: "latest"
-
-      - name: Set DD RUM Version
+      - name: Set up DD RUM Version
         run: |
-          echo "{DD_RELEASE_VERSION} = ${{ steps.node_release.outputs.release }}" >> $GITHUB_ENV
-          echo "{DD_RELEASE_VERSION} = ${{ steps.node_release.outputs.release }}" > ${{ secrets.REACT_APP_DD_VERSION }}
+          echo "git fetch --prune --unshallow --tags"
+          echo "REACT_APP_DD_VERSION=$(git describe --abbrev=0 --tags | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Set up Node.js version
         uses: actions/setup-node@v2
@@ -53,15 +42,6 @@ jobs:
         run: |
           yarn run build
 
-      - name: 'Debug release version'
-        env: 
-          DD_RELEASE_VERSION: ${{ steps.node_release.outputs.release }}
-        run: |
-          echo $DD_RELEASE_VERSION
-
-      - name: DISPLAY SECRETS
-        run: echo ${{ secrets.REACT_APP_DD_VERSION }} | sed 's/./& /g'
-
       - name: 'Upload sourcemap to datadog'
         env:
           DATADOG_API_KEY: ${{ secrets.DD_API_KEY }}
@@ -69,6 +49,6 @@ jobs:
           yarn global add @datadog/datadog-ci
           datadog-ci sourcemaps upload ./build/static/js \
             --service=rum-testing-features \
-            --release-version=1.0.0 \
+            --release-version=${{ env.REACT_APP_DD_VERSION }} \
             --minified-path-prefix=http://localhost:3000/static/js
         continue-on-error: true
