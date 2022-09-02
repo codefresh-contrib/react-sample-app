@@ -5,6 +5,7 @@ env:
   REACT_APP_DD_CLIENT_TOKEN: ${{ secrets.REACT_APP_DD_CLIENT_TOKEN }}
   REACT_APP_DD_ENV: ${{ secrets.REACT_APP_DD_ENV }}
   REACT_APP_DD_CLIENT_APP_ID: ${{ secrets.REACT_APP_DD_CLIENT_APP_ID }}
+  G
   
 on:
   push:
@@ -22,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: |
-          echo ${{ env.GITHUB_REPOSITORY }}
+          echo ${{ github.repository }}
         continue-on-error: true
 
       - run: |
@@ -38,7 +39,7 @@ jobs:
         id: node_release
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ env.GITHUB_REPOSITORY }}
+          repository: ${{ github.repository }}
           type: "latest"
 
       - name: Set DD RUM Version
