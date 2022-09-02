@@ -10,8 +10,6 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - '.github/**'
   workflow_dispatch:
 
 jobs:
@@ -36,13 +34,6 @@ jobs:
       - name: 'Build web app'
         run: |
           yarn run build
-
-      - name: 'Upload artifact'
-        uses: actions/upload-artifact@v2
-        with:
-          name: react-app
-          path: ${{ env.AZURE_WEB_PACKAGE_PATH }}
-
 
       - name: 'Upload sourcemap to datadog'
         env:
