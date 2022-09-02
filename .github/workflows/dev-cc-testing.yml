@@ -21,6 +21,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - run: |
+          echo ${{ env.GITHUB_REPOSITORY }}
+        continue-on-error: true
+
+      - run: |
+          echo ${{ secrets.GITHUB_REPOSITORY }}
+        continue-on-error: true
+
+      - run: |
+          echo $env.GITHUB_REPOSITORY
+        continue-on-error: true
+
       - name: Get latest release of NodeJS
         uses: rez0n/actions-github-release@main
         id: node_release
