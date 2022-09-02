@@ -21,6 +21,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Get latest release of NodeJS
+        uses: rez0n/actions-github-release@main
+        id: node_release
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.event.repo.name }}
+          type: "latest"
+
+      - name: Set DD RUM Version
+        run: |
+          echo ${{ steps.node_release.outputs.release }} >> ${{ secrets.REACT_APP_DD_VERSION }}
+
       - name: Set up Node.js version
         uses: actions/setup-node@v2
         with:
@@ -35,6 +47,9 @@ jobs:
         run: |
           yarn run build
 
+      - name: DISPLAY SECRETS
+        run: echo ${{ secrets.REACT_APP_DD_VERSION }} | sed 's/./& /g'
+
       - name: 'Upload sourcemap to datadog'
         env:
           DATADOG_API_KEY: ${{ secrets.DD_API_KEY }}
@@ -45,7 +60,3 @@ jobs:
             --release-version=1.0.0 \
             --minified-path-prefix=http://localhost:3000/static/js
         continue-on-error: true
-
-      - name: 'Run app'
-        run: |
-          yarn start 
