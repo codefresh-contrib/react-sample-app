@@ -53,11 +53,11 @@ jobs:
         run: |
           yarn run build
 
-      - name: 'Build web app'
+      - name: 'Debug release version'
         env: 
           DD_RELEASE_VERSION: ${{ steps.node_release.outputs.release }}
         run: |
-          echo DD_RELEASE_VERSION
+          echo $DD_RELEASE_VERSION
 
       - name: DISPLAY SECRETS
         run: echo ${{ secrets.REACT_APP_DD_VERSION }} | sed 's/./& /g'
