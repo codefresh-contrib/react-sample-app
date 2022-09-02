@@ -26,7 +26,7 @@ jobs:
         id: node_release
         env:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.event.repo.name }}
+          repository: ${{ env.GITHUB_REPOSITORY }}
           type: "latest"
 
       - name: Set DD RUM Version
