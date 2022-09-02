@@ -21,10 +21,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up DD RUM Version
+      - name: Get latest release of Application
+        uses: rez0n/actions-github-release@main
+        id: node_release
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ env.GITHUB_REPOSITORY }}
+          type: "latest"
+
+      - name: Set DD RUM Version
         run: |
-          echo "git fetch --prune --unshallow --tags"
-          echo "REACT_APP_DD_VERSION=$(git describe --abbrev=0 --tags | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')" >> $GITHUB_ENV
+          echo "REACT_APP_DD_VERSION=${{ steps.node_release.outputs.release }}" >> $GITHUB_ENV
 
       - name: Set up Node.js version
         uses: actions/setup-node@v2
@@ -37,8 +44,6 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: 'Build web app'
-        env: 
-          DD_RELEASE_VERSION: ${{ steps.node_release.outputs.release }}
         run: |
           yarn run build
 
