@@ -23,15 +23,6 @@ jobs:
 
       - run: |
           echo ${{ github.repository }}
-        continue-on-error: true
-
-      - run: |
-          echo ${{ secrets.GITHUB_REPOSITORY }}
-        continue-on-error: true
-
-      - run: |
-          echo $env.GITHUB_REPOSITORY
-        continue-on-error: true
 
       - name: Get latest release of NodeJS
         uses: rez0n/actions-github-release@main
@@ -43,7 +34,7 @@ jobs:
 
       - name: Set DD RUM Version
         run: |
-          echo ${{ steps.node_release.outputs.release }} >> ${{ secrets.REACT_APP_DD_VERSION }}
+          echo ${{ steps.node_release.outputs.release }} > ${{ secrets.REACT_APP_DD_VERSION }}
 
       - name: Set up Node.js version
         uses: actions/setup-node@v2
