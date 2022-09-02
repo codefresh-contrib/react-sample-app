@@ -7,8 +7,6 @@ It is packaged using Codefresh.
 
 More details can be found in [the documentation page](https://codefresh.io/docs/docs/learn-by-example/nodejs/react/).
 
-
-
 ## Instructions
 
 To install dependencies 

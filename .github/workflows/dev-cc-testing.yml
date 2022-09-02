@@ -1,0 +1,51 @@
+name: DEV Web Deployment
+
+env:
+  NODE_VERSION: '16.x'
+  REACT_APP_DD_CLIENT_TOKEN: ${{ secrets.REACT_APP_DD_CLIENT_TOKEN }}
+  REACT_APP_DD_ENV: ${{ secrets.REACT_APP_DD_ENV }}
+  REACT_APP_DD_CLIENT_APP_ID: ${{ secrets.REACT_APP_DD_CLIENT_APP_ID }}
+  
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    name: Build and Deploy Job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: 'Install packages'
+        run: |
+          yarn install --frozen-lockfile
+
+      - name: 'Build web app'
+        run: |
+          yarn run build
+
+      - name: 'Upload sourcemap to datadog'
+        env:
+          DATADOG_API_KEY: ${{ secrets.DD_API_KEY }}
+        run: |
+          datadog-ci sourcemaps upload ./build/static/js \
+            --service=rum-testing-features \
+            --release-version=1.0.0 \
+            --minified-path-prefix=http://localhost:3000/static/js
+
+      - name: 'Run app'
+        run: |
+          yarn start 
