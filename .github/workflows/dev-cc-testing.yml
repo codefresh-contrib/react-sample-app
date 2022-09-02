@@ -34,7 +34,8 @@ jobs:
 
       - name: Set DD RUM Version
         run: |
-          echo ${{ steps.node_release.outputs.release }} > ${{ secrets.REACT_APP_DD_VERSION }}
+          echo "{DD_RELEASE_VERSION} = ${{ steps.node_release.outputs.release }}" >> $GITHUB_ENV
+          echo "{DD_RELEASE_VERSION} = ${{ steps.node_release.outputs.release }}" > ${{ secrets.REACT_APP_DD_VERSION }}
 
       - name: Set up Node.js version
         uses: actions/setup-node@v2
@@ -47,8 +48,16 @@ jobs:
           yarn install --frozen-lockfile
 
       - name: 'Build web app'
+        env: 
+          DD_RELEASE_VERSION: ${{ steps.node_release.outputs.release }}
         run: |
           yarn run build
+
+      - name: 'Build web app'
+        env: 
+          DD_RELEASE_VERSION: ${{ steps.node_release.outputs.release }}
+        run: |
+          echo DD_RELEASE_VERSION
 
       - name: DISPLAY SECRETS
         run: echo ${{ secrets.REACT_APP_DD_VERSION }} | sed 's/./& /g'
