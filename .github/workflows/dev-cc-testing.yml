@@ -37,14 +37,23 @@ jobs:
         run: |
           yarn run build
 
+      - name: 'Upload artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: react-app
+          path: ${{ env.AZURE_WEB_PACKAGE_PATH }}
+
+
       - name: 'Upload sourcemap to datadog'
         env:
           DATADOG_API_KEY: ${{ secrets.DD_API_KEY }}
         run: |
+          yarn global add @datadog/datadog-ci
           datadog-ci sourcemaps upload ./build/static/js \
             --service=rum-testing-features \
             --release-version=1.0.0 \
             --minified-path-prefix=http://localhost:3000/static/js
+        continue-on-error: true
 
       - name: 'Run app'
         run: |
