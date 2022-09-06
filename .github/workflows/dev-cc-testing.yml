@@ -21,8 +21,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          echo "REACT_APP_DD_VERSION=1.5.4" >> $GITHUB_ENV;
+      - name: Get latest release of NodeJS
+        uses: rez0n/actions-github-release@main
+        id: node_release
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          type: "latest"
+
+      - name: Set DD RUM Version
+        run: |
+          echo "git fetch --prune --unshallow --tags"
+          echo "REACT_APP_DD_VERSION=${{ steps.node_release.outputs.release }}" >> $GITHUB_ENV;
 
       - name: Set up Node.js version
         uses: actions/setup-node@v2
