@@ -28,11 +28,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           type: "latest"
+        continue-on-error: true
 
       - name: Set DD RUM Version
         run: |
-          echo "git fetch --prune --unshallow --tags"
           echo "REACT_APP_DD_VERSION=${{ steps.node_release.outputs.release }}" >> $GITHUB_ENV;
+        continue-on-error: true
 
       - name: Set up Node.js version
         uses: actions/setup-node@v2
