@@ -32,7 +32,7 @@ jobs:
 
       - name: Set DD RUM Version
         run: |
-          echo "REACT_APP_DD_VERSION=${{ steps.node_release.outputs.release }}" >> $GITHUB_ENV;
+          echo "REACT_APP_DD_VERSION=${{ steps.node_release.outputs.release }}" | tr -d v >> $GITHUB_ENV;
         continue-on-error: true
 
       - name: Set up Node.js version
