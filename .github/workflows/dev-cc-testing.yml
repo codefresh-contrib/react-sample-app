@@ -25,9 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          echo "${{ inputs.version}} ";
-      
       - name: Get latest release of NodeJS
         uses: rez0n/actions-github-release@main
         id: node_release
@@ -38,6 +35,7 @@ jobs:
         continue-on-error: true
 
       - name: Set DD RUM Version
+        if: inputs.version == null
         run: |
           echo "REACT_APP_DD_VERSION=${{ steps.node_release.outputs.release }}" | tr -d v >> $GITHUB_ENV;
         continue-on-error: true
