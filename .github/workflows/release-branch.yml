@@ -1,0 +1,25 @@
+name: Create release branch for Prod
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  create-release-branch:
+    runs-on: ubuntu-latest
+    name: Creates Release branch From Latest Released tag
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch release version from tags
+        run: |
+          echo "git fetch --prune --unshallow --tags"
+          echo "RELEASE_VERSION=v$(git describe --abbrev=0 --tags | sed 's/[^0-9.]*\([0-9.]*\).*/\1/')" >> $GITHUB_ENV;
+            
+      - name: Create branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'release-${{ RELEASE_VERSION }}'
+          sha: '${{ github.event.pull_request.head.sha }}'
