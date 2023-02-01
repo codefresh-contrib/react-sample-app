@@ -1,0 +1,132 @@
+pipeline:
+  name: reactmobapp
+  identifier: reactmobapp
+  projectIdentifier: Shell
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.fmazlabsgit
+        repoName: fm-react-sample-app
+        build: <+input>
+  stages:
+    - stage:
+        name: shellapp
+        identifier: scan_and_build_react
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: CreateHash
+                  identifier: CreateHash
+                  spec:
+                    shell: Sh
+                    command: |-
+                      YARN_LOCK_HASH=`openssl sha1 yarn.lock | cut -c 22-`
+                      echo $YARN_LOCK_HASH
+                  description: CreateHash
+              - step:
+                  type: RestoreCacheS3
+                  name: Restore Cache From S3
+                  identifier: Restore_Cache_From_S3
+                  spec:
+                    connectorRef: account.aws_fm
+                    region: ap-south-1
+                    bucket: shellpov
+                    key: <+pipeline.stages.shellapp.spec.execution.steps.CreatHash.output.outputVariables.YARN_LOCK_HASH>
+                    archiveFormat: Tar
+              - step:
+                  type: Security
+                  name: Sonar Scan
+                  identifier: Sonar_Scan
+                  spec:
+                    privileged: true
+                    settings:
+                      policy_type: orchestratedScan
+                      scan_type: repository
+                      product_name: sonarqube
+                      product_config_name: default
+                      repository_project: fm-react-sample-app
+                      repository_branch: <+codebase.branch>
+                      product_access_token: <+secrets.getValue("sonartoken")>
+                      product_domain: http://52.66.59.93:9000
+                      product_project_name: sonarharness
+                      product_project_key: <+secrets.getValue("sonarharness")>
+                    imagePullPolicy: Always
+                  description: Scan Sonaqube
+                  timeout: 1h
+              - step:
+                  type: Run
+                  name: Yarn Install
+                  identifier: Yarn_Install
+                  spec:
+                    shell: Sh
+                    command: |-
+                      echo <+pipeline.stages.shellapp.spec.execution.steps.CreatHash.output.outputVariables.YARN_LOCK_HASH>
+                      yarn install --prod
+                  description: Yarn Install
+              - step:
+                  type: SaveCacheS3
+                  name: Save Cache to S3
+                  identifier: Save_Cache_to_S3
+                  spec:
+                    connectorRef: account.aws_fm
+                    region: ap-south-1
+                    bucket: shellpov
+                    key: <+pipeline.stages.shellapp.spec.execution.steps.CreateHash.output.outputVariables.YARN_LOCK_HASH>
+                    sourcePaths:
+                      - node_modules
+                    archiveFormat: Tar
+              - step:
+                  type: Run
+                  name: Yarn build
+                  identifier: Yarn_build
+                  spec:
+                    shell: Sh
+                    command: |-
+                      ls -la
+                      yarn build
+                  description: Yarn Build
+              - step:
+                  type: Run
+                  name: Run Tests
+                  identifier: Run_Tests
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: node:18
+                    shell: Sh
+                    command: yarn test
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - "**/*.xml"
+                  description: Test Intelligence
+          sharedPaths:
+            - /var/run
+          serviceDependencies:
+            - identifier: DinD
+              name: DinD
+              type: Service
+              spec:
+                connectorRef: account.harnessImage
+                image: docker:dind
+            - identifier: Hash
+              name: Hash
+              type: Service
+              description: Node Image
+              spec:
+                connectorRef: account.harnessImage
+                image: node:18
+        variables: []
+  timeout: 10h
