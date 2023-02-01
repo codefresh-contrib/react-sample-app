@@ -113,4 +113,5 @@ pipeline:
               spec:
                 connectorRef: account.harnessImage
                 image: node:18
+        variables: []
   timeout: 10h
