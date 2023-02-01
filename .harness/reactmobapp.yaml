@@ -97,6 +97,21 @@ pipeline:
                       ls -la
                       yarn build
                   description: Yarn Build
+              - step:
+                  type: Run
+                  name: Run Tests
+                  identifier: Run_Tests
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: node:18
+                    shell: Sh
+                    command: yarn test
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - "**/*.xml"
+                  description: Test Intelligence
           sharedPaths:
             - /var/run
           serviceDependencies:
