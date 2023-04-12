@@ -47,7 +47,7 @@ pipeline:
                     archiveFormat: Tar
               - step:
                   type: Security
-                  name: SonarQube
+                  name: Sonar Scan
                   identifier: Sonar_Scan
                   spec:
                     privileged: true
